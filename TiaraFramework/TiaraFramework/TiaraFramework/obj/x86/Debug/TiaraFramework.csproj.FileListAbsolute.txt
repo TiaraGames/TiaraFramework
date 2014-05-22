@@ -1,0 +1,6 @@
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.exe
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.pdb
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.csprojResolveAssemblyReference.cache
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.exe
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.pdb
