@@ -19,5 +19,4 @@ TUTORIAL
 3. Use Replace(Ctrl + H) to replace all the "TiaraFramework" in whole project with your project name.
 4. Press the Run button, if you see a blank window with gray background, congratulation!
 
-Then you can download the template stages to learn how to use this framework or just learn from the source code.
-(templates would be uploaded before the end of this month.)
+Then you can download the template stages to learn how to use this framework or just learn from the source code (templates would be uploaded before the end of this month).
