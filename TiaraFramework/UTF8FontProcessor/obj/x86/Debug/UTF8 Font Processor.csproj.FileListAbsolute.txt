@@ -1,0 +1,5 @@
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\UTF8FontProcessor\bin\x86\Debug\UTF8FontProcessor.dll
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\UTF8FontProcessor\bin\x86\Debug\UTF8FontProcessor.pdb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\UTF8FontProcessor\obj\x86\Debug\UTF8 Font Processor.csprojResolveAssemblyReference.cache
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\UTF8FontProcessor\obj\x86\Debug\UTF8FontProcessor.dll
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\UTF8FontProcessor\obj\x86\Debug\UTF8FontProcessor.pdb

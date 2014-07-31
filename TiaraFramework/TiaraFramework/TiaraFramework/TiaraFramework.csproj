@@ -18,6 +18,7 @@
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>发布\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -28,9 +29,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>0.0.2.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -103,10 +103,13 @@
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </Content>
-    <Content Include="Playscript\1.txt" />
     <Content Include="UTF8Text\messages.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\UTF8FontProcessor\UTF8 Font Processor.csproj">
+      <Project>{EDF00015-057B-42AE-9BD1-61361BAA8F6B}</Project>
+      <Name>UTF8 Font Processor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TiaraFrameworkContent\TiaraFrameworkContent.contentproj">
       <Name>TiaraFrameworkContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>

@@ -1,2 +1,0 @@
-Content\SampleImges\Buttons\btnNext.xnb
-Content\SampleImges\Buttons\btnPrev.xnb

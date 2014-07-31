@@ -14,3 +14,9 @@ G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraF
 G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.exe
 G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.pdb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.exe
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.pdb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.csprojResolveAssemblyReference.cache
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.exe
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.pdb
