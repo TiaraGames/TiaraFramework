@@ -9,7 +9,6 @@ TiaraFramework is a 2D PC game development framework based on XNA, which enables
 1. Refactored the Action class, it can be used more easily.
 2. Added support for UTF-8 characters, but only for local fonts.
 3. Some little changes.
-------------------------
 
 DEVELOPMENT ENVIRONMENT
 ------------------------
