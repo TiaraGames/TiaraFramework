@@ -13,11 +13,13 @@ namespace TiaraFramework.Component
 {
     public class SpriteManager : Microsoft.Xna.Framework.GameComponent
     {
-        public List<ASprite> spriteList;
-        public Vector2 smPosition;
-        public Stage stageBase;
+        internal List<ASprite> spriteList;
         List<ASprite> spritesNeedRemove;
         bool _isShown = true;
+        bool _isEnabled = true;
+
+        public Vector2 MgrPosition;
+        public Stage StageBase;
         public bool Shown
         {
             set
@@ -38,8 +40,7 @@ namespace TiaraFramework.Component
                 return _isShown; 
             }
         }
-        bool _isEnabled = true;
-        public bool Enabled
+        public new bool Enabled
         {
             set
             {
@@ -69,7 +70,7 @@ namespace TiaraFramework.Component
         {
             spriteList = new List<ASprite>();
             spritesNeedRemove = new List<ASprite>();
-            this.stageBase = stageBase;
+            this.StageBase = stageBase;
         }
 
         public ASprite this[int index]
@@ -113,10 +114,16 @@ namespace TiaraFramework.Component
         {
             sprite.Manager = this;
             spriteList.Add(sprite);
- //           if (sprite is Button)
- //           {
-                
- //           }
+            if (sprite.Slaves != null)
+                foreach (ASprite slv in sprite.Slaves)
+                    addSlave(slv);
+        }
+        private void addSlave(ASprite slave)
+        {
+            spriteList.Add(slave);
+            if (slave.Slaves != null)
+                foreach (ASprite slv in slave.Slaves)
+                    addSlave(slv);
         }
 
         public bool RemoveAt(int index)
@@ -131,10 +138,15 @@ namespace TiaraFramework.Component
         {
             if (spriteList.IndexOf(sprite) == -1)
                 return false;
-            sprite.isEnd = true;
+            for (int i = sprite.Slaves.Count - 1; i >= 0; i--)
+                spriteList.Remove(sprite.Slaves[i]);
+            spriteList.Remove(sprite);
             return true;
         }
 
+        /// <summary>
+        /// Hasn't been completed.
+        /// </summary>
         public void Zoom(Vector2 Anchor, Vector2 Scale)
         {
             foreach (Sprite sp in spriteList)
@@ -150,20 +162,22 @@ namespace TiaraFramework.Component
 
             for (int i = 0; i < spriteList.Count; i++)
             {
-                spriteList[i]._allupdate(gameTime);
+                spriteList[i].AllUpdate(gameTime);
                 if (spriteList[i].isEnd)
                     spritesNeedRemove.Add(spriteList[i]);
                 if (spriteList[i].Slaves != null)
-                    foreach (Sprite sp in spriteList[i].Slaves)
+                {
+                    foreach (ASprite sp in spriteList[i].Slaves)
                     {
                         sp.Update(gameTime);
                         if (sp.isEnd)
                             spritesNeedRemove.Add(sp);
-                        foreach (Sprite spr in spritesNeedRemove)
-                            spriteList[i].Slaves.Remove(spr);
                     }
+                    foreach (ASprite spr in spritesNeedRemove)
+                        spriteList[i].Slaves.Remove(spr);
+                }
             }
-            foreach (Sprite s in spritesNeedRemove)
+            foreach (ASprite s in spritesNeedRemove)
                 this.spriteList.Remove(s);
 
             spritesNeedRemove.Clear();

@@ -22,18 +22,19 @@ namespace TiaraFramework
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content1";
 
-            IsMouseVisible = true;
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
-            // Window.AllowUserResizing = true;
-            // graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
+            Window.AllowUserResizing = false;
 
-            this.Components.Add(new StageManager(this));
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
             base.Initialize();
+            Components.Add(new StageManager(this, StageIndex.Blank));
+            Tool.Game = this;
         }
 
         protected override void LoadContent()
@@ -58,4 +59,5 @@ namespace TiaraFramework
             base.Draw(gameTime);
         }
     }
+
 }

@@ -16,34 +16,33 @@ namespace TiaraFramework.Component
 {
     public class Stage : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        private SpriteBatch spriteBatch;
-        protected Rectangle windowBounds;
         public bool isFinished;
-        public StageIndex nextStage;
-        public float fps;
-        protected long deltaFrames;
-        protected long framesTimer;
-        protected bool enable;
+        public StageIndex NextStage;
         public Dictionary<string, SpriteManager> SprMgrClct;
         public Window Window;
         public Color BackgoundColor = new Color(40, 40, 40);
+        protected Rectangle windowBounds;
+        protected long deltaFrames;
+        protected long framesTimer;
+        protected bool enable;
+        private SpriteBatch spriteBatch;
         // Input
         protected MouseState MouseState;
         protected Point MousePosP { get { return new Point(MouseState.X, MouseState.Y); } }
         protected Vector2 MousePosV { get { return new Vector2(MouseState.X, MouseState.Y); } }
         protected Vector2 MouseLastPos;
         protected Vector2 MouseMove;
+        private int[] mousePressedFrame = new int[] { 0, 0, 0 };
+        protected MouseButton MouseButton;
         protected int ScrollWheelLastValue;
         protected int ScrollWheelChange;
         protected KeyboardState KeyboardState;
-        protected bool isMouseLBDown = false;
-        protected bool isMouseRBDown = false;
 
         public Stage(Game game, float fps)
             : base(game)
         {
             this.windowBounds = new Rectangle(0, 0, Game.Window.ClientBounds.Width, Game.Window.ClientBounds.Height);
-            this.fps = fps;
+            Tool.SetFPS(fps);
             this.enable = true;
             this.isFinished = false;
 
@@ -51,6 +50,7 @@ namespace TiaraFramework.Component
             SprMgrClct.Add("Player", new SpriteManager(Game, this));
             SprMgrClct.Add("Enemy", new SpriteManager(Game, this));
             SprMgrClct.Add("UI", new SpriteManager(Game, this));
+            SprMgrClct.Add("Map", new SpriteManager(Game, this));
 
             this.Window = new Window(game);
             game.Window.ClientSizeChanged += new EventHandler<EventArgs>(ResizeWindowBounds);
@@ -58,6 +58,9 @@ namespace TiaraFramework.Component
             this.MouseMove = Vector2.Zero;
             this.MouseLastPos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
             this.ScrollWheelLastValue = Mouse.GetState().ScrollWheelValue;
+            this.MouseButton = new MouseButton();
+
+            Pixel.Init(game);
         }
 
         public override void Initialize()
@@ -76,23 +79,23 @@ namespace TiaraFramework.Component
         {
             SprMgrClct.Clear();
             isFinished = true;
-            this.nextStage = nextStage;
+            this.NextStage = nextStage;
         }
 
         #region Timers
         protected long SetTimer(double interval)
         {
-            return framesTimer += (long)(interval * fps);
+            return framesTimer += (long)(interval * Tool.GetFPS());
         }
 
         protected long SetTimer(int minites, double seconds)
         {
-            return framesTimer += (long)((minites * 60 + seconds) * fps);
+            return framesTimer += (long)((minites * 60 + seconds) * Tool.GetFPS());
         }
 
         protected long SetTempTimer(double interval)
         {
-            return framesTimer + (long)(interval * fps);
+            return framesTimer + (long)(interval * Tool.GetFPS());
         }
 
         protected void SetTimerWithFrame(int frame)
@@ -107,7 +110,7 @@ namespace TiaraFramework.Component
 
         protected int TimeToFrames(double interval)
         {
-            return (int)(interval * fps);
+            return (int)(interval * Tool.GetFPS());
         }
         #endregion
 
@@ -119,7 +122,7 @@ namespace TiaraFramework.Component
         public void MoveSMs(Vector2 moveVec, SpriteManager[] SMs)
         {
             foreach (SpriteManager sm in SMs)
-                sm.smPosition += moveVec;
+                sm.MgrPosition += moveVec;
         }
 
         public override void Update(GameTime gameTime)
@@ -136,6 +139,29 @@ namespace TiaraFramework.Component
             MouseLastPos = MousePosV;
             ScrollWheelChange = MouseState.ScrollWheelValue - ScrollWheelLastValue;
             ScrollWheelLastValue = MouseState.ScrollWheelValue;
+
+            // MouseButton
+            ButtonState[] bss = new ButtonState[] { MouseState.LeftButton, MouseState.RightButton, MouseState.MiddleButton };
+            for (int i = 0; i < 3; i++)
+            {
+                MouseButton[i].IsPressed = false;
+                if (bss[i] == ButtonState.Pressed)
+                {
+                    if (++mousePressedFrame[i] == 1)
+                        MouseButton[i].IsClick = true;
+                    else
+                        MouseButton[i].IsClick = false;
+                    MouseButton[i].IsPressing = true;
+                }
+                else
+                {
+                    if (mousePressedFrame[i] != 0)
+                        MouseButton[i].IsPressed = true;
+                    mousePressedFrame[i] = 0;
+                    MouseButton[i].IsClick = false;
+                    MouseButton[i].IsPressing = false;
+                }
+            }
         }
 
         void ResizeWindowBounds(object sender, EventArgs e)
@@ -147,41 +173,27 @@ namespace TiaraFramework.Component
         {
             base.Draw(gameTime);
             Game.GraphicsDevice.Clear(BackgoundColor);
+            List<ASprite> liNeedDraw = new List<ASprite>();
 
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack,BlendState.NonPremultiplied);
             foreach (KeyValuePair<string, SpriteManager> pair in SprMgrClct)
                 foreach (ASprite asp in pair.Value.spriteList)
                 {
                     if (asp is Sprite && asp.isShown)
                     {
                         Sprite s = (Sprite)asp;
-                            spriteBatch.Draw(
-                                s.Texture,
-                                s.GetAbsPosition(),
-                                s.GetDrawRect(),
-                                s.Color,
-                                s.Rotation,
-                                s.Origin,
-                                s.Scale,
-                                s.SpriteEffect,
-                                s.Depth);
-                        if (s.Slaves != null && s.isShown)
-                            foreach (Sprite slave in s.Slaves)
-                            {
-                                if (slave.isShown)
-                                    spriteBatch.Draw(
-                                        slave.Texture,
-                                        slave.GetAbsPosition(),
-                                        slave.GetDrawRect(),
-                                        slave.Color,
-                                        slave.Rotation,
-                                        slave.Origin,
-                                        slave.Scale,
-                                        slave.SpriteEffect,
-                                        slave.Depth);
-                            }
+                        spriteBatch.Draw(
+                            s.Texture,
+                            s.GetAbsPosition(),
+                            s.GetDrawRect(),
+                            s.Color,
+                            s.Rotation,
+                            s.Origin,
+                            s.Scale,
+                            s.SpriteEffect,
+                            s.Depth);
                     }
-                    if (asp is Button)
+                    else if (asp is Button)
                     {
                         Sprite s = ((Button)asp).nowButton;
                         spriteBatch.Draw(
@@ -195,7 +207,7 @@ namespace TiaraFramework.Component
                                 asp.SpriteEffect,
                                 asp.Depth);
                     }
-                    if (asp is Label)
+                    else if (asp is Label)
                     {
                         Label l = (Label)asp;
                         spriteBatch.DrawString(
@@ -211,6 +223,14 @@ namespace TiaraFramework.Component
                     }
                 }
             spriteBatch.End();
+        }
+
+        private void collectAllASprite(ASprite source, List<ASprite> target)
+        {
+            target.Add(source);
+            if (source.Slaves != null && source.isShown)
+                for (int i = 0; i < source.Slaves.Count; i++)
+                    collectAllASprite(source.Slaves[i], target);
         }
     }
 
@@ -230,6 +250,38 @@ namespace TiaraFramework.Component
         public Window(Game game)
         {
             window = game.Window;
+        }
+    }
+
+    public class MouseButton
+    {
+        public class MouseButtonState
+        {
+            public bool IsClick = false;
+            public bool IsPressing = false;
+            public bool IsPressed = false;
+        }
+        public MouseButtonState L { get; internal set; }
+        public MouseButtonState R { get; internal set; }
+        public MouseButtonState M { get; internal set; }
+        public MouseButtonState this[int index]
+        {
+            get
+            {
+                index %= 3;
+                if (index == 0)
+                    return L;
+                else if (index == 1)
+                    return R;
+                else
+                    return M;
+            }
+        }
+        public MouseButton()
+        {
+            L = new MouseButtonState();
+            R = new MouseButtonState();
+            M = new MouseButtonState();
         }
     }
 }

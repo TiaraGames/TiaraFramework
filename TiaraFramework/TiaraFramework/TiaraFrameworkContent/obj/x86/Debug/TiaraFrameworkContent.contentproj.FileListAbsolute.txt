@@ -1,1 +1,2 @@
 E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFrameworkContent\obj\x86\Debug\TiaraFrameworkContent.contentprojResolveAssemblyReference.cache
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFrameworkContent\obj\x86\Debug\TiaraFrameworkContent.contentprojResolveAssemblyReference.cache

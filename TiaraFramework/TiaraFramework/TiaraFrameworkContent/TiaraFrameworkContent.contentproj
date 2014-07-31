@@ -30,7 +30,20 @@
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.VideoImporters, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SampleImges\" />
+    <Folder Include="SampleImges\Charas\" />
+    <Folder Include="SampleImges\Fonts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SampleImges\Buttons\btnNext.png">
+      <Name>btnNext</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="SampleImges\Buttons\btnPrev.png">
+      <Name>btnPrev</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 

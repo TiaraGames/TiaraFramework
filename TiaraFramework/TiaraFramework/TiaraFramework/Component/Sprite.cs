@@ -9,17 +9,21 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using TiaraFramework.Component.Extend;
+
 namespace TiaraFramework.Component
 {
     public enum LoopStyle { Circulation, Reciprocation }
-    public class LoopMode
+    public struct LoopMode
     {
         public LoopStyle Style;
         public int LoopTime;
+        public bool isLoopFinished;
         public LoopMode(LoopStyle loopStyle, int time)
         {
             this.Style = loopStyle;
             this.LoopTime = time;
+            this.isLoopFinished = false;
         }
     }
 
@@ -78,6 +82,13 @@ namespace TiaraFramework.Component
         {
             get { return IndexToFrame(EndIndex); }
         }
+        protected int tslf; // time since last frame
+        protected int mspf; // milliscoends per frame
+        public int FPS { get; protected set; }
+
+        public bool isStopAtLastFrame;
+        public bool isAniStoped;
+        public bool isPositive;
 
         public LoopMode Loop;
         protected int loopedTimes;
@@ -103,15 +114,9 @@ namespace TiaraFramework.Component
             isStopAtLastFrame = false;
             loopedTimes = 0;
         }
-
-
-
+        
 
         #region CONSTRUCTORS
-        protected Sprite(Game game)
-            : base(game)
-        {
-        }
 
         public Sprite(Vector2 position, Texture2D texture, Point sheetSize, Point frameSize, float depth, Game game)
             : this(game)
@@ -125,8 +130,13 @@ namespace TiaraFramework.Component
             this.FrameSize = frameSize;
             this.DrawRect = new Rectangle(0, 0, frameSize.X, frameSize.Y);
             this.Depth = depth;
+            this.FPS = 60;
             this.mspf = 1000 / FPS;
-            loopedTimes = 1;
+            this.tslf = 0;
+            this.loopedTimes = 1;
+            this.isAniStoped = false;
+            this.isStopAtLastFrame = false;
+            this.isPositive = true;
         }
 
         public Sprite(Vector2 position, Texture2D texture, int startIndex, int playFramesNum, Point sheetSize, Point frameSize, float depth, Game game)
@@ -141,6 +151,17 @@ namespace TiaraFramework.Component
         // Multi-frames Sprite
         /************************************************************************/
         // Single-frame Sprite
+        // 
+        protected Sprite(Vector2 position, string texturePath, float depth, Game game)
+            : this(game)
+        {
+            this.Texture = game.Content.Load<Texture2D>(texturePath);
+            this.FrameSize = new Point(this.Texture.Width, this.Texture.Height);
+            this.DrawRect = new Rectangle(0, 0, FrameSize.X, FrameSize.Y);
+            this.Position = position;
+            this.Depth = depth;
+            isAniStoped = true;
+        }
 
         protected Sprite(Vector2 position, Texture2D texture, float depth, Game game)
             : this(game)
@@ -160,12 +181,56 @@ namespace TiaraFramework.Component
             this.Rotation = rotation;
             this.Color = color;
         }
+
+        // Single-frame Sprite
+        /************************************************************************/
+        // Special
+        protected Sprite(Game game)
+            : base(game) { }
+
+        protected Sprite(Sprite sp)
+            : base(sp)
+        {
+            _startIndex = sp._startIndex;
+            _playFramesNum = sp._playFramesNum;
+
+            Texture = sp.Texture;
+            FrameSize = sp.FrameSize;
+
+            sheetSize = sp.sheetSize;
+            CurrentIndex = sp.CurrentIndex;
+            OriginIndex = sp.OriginIndex;
+            PauseFrame = sp.PauseFrame;
+            tslf = sp.tslf;
+            mspf = sp.mspf;
+            FPS = sp.FPS;
+
+            loopedTimes = sp.loopedTimes;
+            isAniStoped = sp.isAniStoped;
+            isPositive = sp.isPositive;
+
+            Loop = sp.Loop;
+            loopedTimes = sp.loopedTimes;
+
+            DrawRect = sp.DrawRect;
+
+            if (sp.Slaves != null)
+            {
+                Slaves = new List<ASprite>();
+                foreach (Sprite slv in sp.Slaves)
+                    Slaves.Add(slv.Copy());
+            }
+        }
         #endregion
 
 
 
-
         #region GetSingle funcs
+        public static Sprite OneFrameSprite(Vector2 position, string texturePath, float depth, Game game)
+        {
+            return new Sprite(position, texturePath, depth, game);
+        }
+
         public static Sprite OneFrameSprite(Vector2 position, Texture2D texture, float depth, Game game)
         {
             return new Sprite(position, texture, depth, game);
@@ -178,89 +243,11 @@ namespace TiaraFramework.Component
         }
         #endregion
 
-
-
         
         public override void Update(GameTime gameTime)
         {
-            #region Act
-            if (!isActStoped)
-            {
-                if (ActList != null)
-                {
-                    while (true)
-                    {
-                        if (ActList.Count == 0)
-                            break;
-                        if (ActPlayingList.Count == 0 || !ActPlayingList[ActPlayingList.Count - 1].occupyTime)
-                        {
-                            ActPlayingList.Add(ActList[0]);
-                            ActList.RemoveAt(0);
-                        }
-                        else
-                            break;
-                    }
-                    foreach (Act act in ActPlayingList)
-                    {
-                        switch (act.actType)
-                        {
-                            case ActType.MOVEVEC:
-                                this.Position += act.TargetVec * act.Speed;
-                                break;
-
-                            case ActType.MOVEPOS:
-                                if (act.notStop)
-                                {
-                                    if (act.TargetVec == Vector2.Zero)
-                                    {
-                                        act.TargetVec = act.TargetPos - this.Position;
-                                        act.TargetVec.Normalize();
-                                    }
-                                    else
-                                        this.Position += act.TargetVec * act.Speed;
-                                }
-                                else
-                                {
-                                    Vector2 vecOrien = act.TargetPos - this.Position;
-                                    if (vecOrien.Length() < act.Speed)
-                                    {
-                                        this.Position = act.TargetPos;
-                                        act.isEnd = true;
-                                        break;
-                                    }
-                                    vecOrien.Normalize();
-                                    this.Position += vecOrien * act.Speed;
-                                }
-                                break;
-
-                            case ActType.MOVEROUND:
-
-
-                            case ActType.DELAY:
-                                if (act.DelayTime <= 0)
-                                {
-                                    act.isEnd = true;
-                                    break;
-                                }
-                                act.DelayTime -= (int)(1000f / Manager.stageBase.fps);
-                                break;
-
-                            case ActType.ADDSP:
-                                foreach (Sprite sp in act.spAddList)
-                                    Manager.stageBase.SprMgrClct[act.smAdd].Add(sp);
-                                break;
-                        }
-                    }
-                    for (int i = 0; i < ActPlayingList.Count; i++)
-                        if (ActPlayingList[i].isEnd)
-                        {
-                            ActPlayingList.RemoveAt(i);
-                            i--;
-                        }
-                }
-            }
-            #endregion
-
+            base.Update(gameTime);
+            
             #region Animation
             if (!isAniStoped)
             {
@@ -276,12 +263,12 @@ namespace TiaraFramework.Component
 
                 if (isPositive ? CurrentIndex > OriginIndex + _playFramesNum : CurrentIndex < OriginIndex)
                 {
-                    loopedTimes++;
                     do
                     {
                         if (Loop.LoopTime != 0 && Loop.LoopTime == loopedTimes)
                         {
                             isAniStoped = true;
+                            Loop.isLoopFinished = true;
                             int nah = isPositive ? CurrentIndex-- : CurrentIndex++;
                             break;
                         }
@@ -295,16 +282,15 @@ namespace TiaraFramework.Component
                                 int nah = isPositive ? CurrentIndex-=2 : CurrentIndex+=2;
                                 isPositive = !isPositive;
                                 break;
-                        }                            
+                        }
                     } while (false);
+                    loopedTimes++;
                 }
             }
             #endregion
         }
-
-
-
-
+        
+        
         #region private funcs
         void resetFrame()
         {
@@ -314,9 +300,6 @@ namespace TiaraFramework.Component
             }
         }
         #endregion
-
-
-
 
         #region public funcs
 
@@ -353,11 +336,6 @@ namespace TiaraFramework.Component
             this.isAniStoped = false;
         }
 
-        public void PlayAct()
-        {
-            this.isActStoped = false;
-        }
-
         public void StopAnime()
         {
             this.isAniStoped = true;
@@ -375,17 +353,6 @@ namespace TiaraFramework.Component
             CurrentFrame = frame;
         }
 
-        public void StopAct()
-        {
-            this.isActStoped = true;
-        }
-
-        public void ClearActs()
-        {
-            ActList.Clear();
-            ActPlayingList.Clear();
-        }
-
         public void Rewind()
         {
             CurrentFrame = OriginFrame;
@@ -395,15 +362,6 @@ namespace TiaraFramework.Component
         {
             this.FPS = FPS;
             this.mspf = 1000 / FPS;
-        }
-
-        public void AddAction(Act act)
-        {
-            if (ActList == null)
-                ActList = new List<Act>();
-            if (ActPlayingList == null)
-                ActPlayingList = new List<Act>();
-            ActList.Add(act);
         }
 
         public ASprite CopyBase()
@@ -416,11 +374,11 @@ namespace TiaraFramework.Component
                 foreach (Sprite slv in this.Slaves)
                     sp.Slaves.Add(slv.Copy());
             }
-            if (this.ActList != null)
+            if (this.ActStoreList != null)
             {
-                sp.ActList = new List<Act>();
-                foreach (Act act in this.ActList)
-                    sp.ActList.Add(act.Copy());
+                sp.ActStoreList = new List<Act>();
+                foreach (Act act in this.ActStoreList)
+                    sp.ActStoreList.Add(act.Copy());
                 sp.ActPlayingList = new List<Act>();
                 foreach (Act act in this.ActPlayingList)
                     sp.ActPlayingList.Add(act.Copy());
@@ -433,6 +391,16 @@ namespace TiaraFramework.Component
             return (Sprite)this.CopyBase();
         }
 
+        public Sprite PurelyCopy()
+        {
+            Sprite sp = (Sprite)this.MemberwiseClone();
+            sp.Loop = new LoopMode(this.Loop.Style, this.Loop.LoopTime);
+            sp.Slaves = new List<ASprite>();
+            sp.ActStoreList = new List<Act>();
+            sp.ActPlayingList = new List<Act>();
+            return sp;
+        }
+
         public Rectangle GetRect()
         {
             return new Rectangle((int)Position.X, (int)Position.Y, FrameSize.X, FrameSize.Y);
@@ -441,8 +409,8 @@ namespace TiaraFramework.Component
         public Rectangle GetAbsRect()
         {
             return new Rectangle(
-                (int)Manager.smPosition.X + (int)Position.X - (int)(Origin.X * Scale.X),
-                (int)Manager.smPosition.Y + (int)Position.Y - (int)(Origin.Y * Scale.Y),
+                (int)Manager.MgrPosition.X + (int)Position.X - (int)(Origin.X * Scale.X),
+                (int)Manager.MgrPosition.Y + (int)Position.Y - (int)(Origin.Y * Scale.Y),
                 (int)(DrawRect.Width * Scale.X),
                 (int)(DrawRect.Height * Scale.Y));
         }
@@ -465,14 +433,14 @@ namespace TiaraFramework.Component
                     FrameSize.X - ColliOffset.X * 2, FrameSize.Y - ColliOffset.Y * 2);
             else
                 return new Rectangle(
-                    (int)(Manager.smPosition.X + Position.X - Origin.X + ColliRect.X), 
-                    (int)(Manager.smPosition.Y + Position.Y - Origin.Y + ColliRect.Y), 
+                    (int)(Manager.MgrPosition.X + Position.X - Origin.X + ColliRect.X), 
+                    (int)(Manager.MgrPosition.Y + Position.Y - Origin.Y + ColliRect.Y), 
                     ColliRect.Width, ColliRect.Height);
         }
 
         public Vector2 GetAbsPosition()
         {
-            return new Vector2(Position.X + Manager.smPosition.X, Position.Y + Manager.smPosition.Y);
+            return new Vector2(Position.X + Manager.MgrPosition.X, Position.Y + Manager.MgrPosition.Y);
         }
         #endregion
     }

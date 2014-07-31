@@ -47,8 +47,8 @@ namespace TiaraFramework.Component
         {
             T[] array = new T[Array2.Length];
             for (int i = 0; i < width; i++)
-                for (int j = 0; i < Array2.Length / width; i++)
-                    array[i * width + j] = Array2[i, j];
+                for (int j = 0; j < Array2.Length / width; j++)
+                    array[j * width + i] = Array2[i, j];
             return array;
         }
 

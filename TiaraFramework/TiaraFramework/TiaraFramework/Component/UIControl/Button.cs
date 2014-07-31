@@ -34,11 +34,6 @@ namespace TiaraFramework.Component
         public event ActLPressed LPressed;
         public event ActRPressing RPressing;
         public event ActRPressed RPressed;
-        public object tag1;
-        public object tag2;
-        public object tag3;
-        public object tag4;
-        public object tag5;
         public bool isEnabled = true;
 
         public Button(Sprite offMouse, Sprite onMouse, Sprite onPush, Sprite offPush, Game game)

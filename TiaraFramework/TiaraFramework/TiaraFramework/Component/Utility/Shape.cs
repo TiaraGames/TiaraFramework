@@ -49,7 +49,8 @@ namespace TiaraFramework.Component
         /// </summary>
         public static Texture2D GetRound(int R, Color color, Game game)
         {
-            Texture2D ttRound = new Texture2D(game.GraphicsDevice, R * 2 + 1, R * 2 + 1);
+            //Texture2D ttRound = new Texture2D(game.GraphicsDevice, R * 2 + 1, R * 2 + 1);
+            Texture2D ttRound = new Texture2D(game.GraphicsDevice, R * 2, R * 2);
             Byte4[] btRound = new Byte4[ttRound.Width * ttRound.Width];
             for (int i = 0; i < btRound.Length; i++)
             {
@@ -59,13 +60,8 @@ namespace TiaraFramework.Component
 
                 if (Math.Pow((ptPos.X - vtO.X), 2) + Math.Pow((ptPos.Y - vtO.Y), 2) <= R * R)
                 {
-                    int alpha;
-                    if (Math.Pow((ptPos.X - vtO.X), 2) + Math.Pow((ptPos.Y - vtO.Y), 2) == R * R)
-                        alpha = (int)(color.A * 0.7);
-                    else
-                        alpha = color.A;
                     uint packed = (uint)(
-                        (alpha << 24) +
+                        (color.A << 24) +
                         (color.B << 16) +
                         (color.G << 8) +
                         color.R
@@ -100,41 +96,79 @@ namespace TiaraFramework.Component
 
         //////////////////////////////////////////////////////////////////////////
         /// <summary>
-        /// 返回一个矩形Texture2D
+        /// 返回一个实心矩形Texture2D
         /// </summary>
         public static Texture2D GetRectangle(int width, int height, Color color, Game game)
         {
-
             Texture2D ttRect = new Texture2D(game.GraphicsDevice, width, height);
             Byte4[] btRect = new Byte4[width * height];
+            uint packed = (uint)((color.A << 24) + (color.B << 16) + (color.G << 8) + color.R);
+
             for (int i = 0; i < btRect.Length; i++)
-            {
-                uint packed = (uint)(
-                        (color.A << 24) +
-                        (color.B << 16) +
-                        (color.G << 8) +
-                        color.R
-                        );
                 btRect[i].PackedValue = packed;
-            }
             ttRect.SetData<Byte4>(btRect);
 
             return ttRect;
         }
         /// <summary>
-        /// 返回一个矩形Sprite，旋转中心在左上角。
+        /// 返回一个实心矩形Sprite
         /// </summary>
         public static Sprite GetRectangle(Rectangle rect, Color color, float depth, Game game)
         {
             return GetRectangle(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, color, depth, game);
         }
         /// <summary>
-        /// 返回一个矩形Sprite，旋转中心在左上角。
+        /// 返回一个实心矩形Sprite
         /// </summary>
         public static Sprite GetRectangle(Vector2 position, int width, int height, Color color, float depth, Game game)
         {
             return Sprite.OneFrameSprite(position, GetRectangle(width, height, color, game), depth, game);
         }
+
+        //////////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// 返回一个空心矩形Texture2D
+        /// </summary>
+        public static Texture2D GetHollowRectangle(int width, int height, int border, Color color, Game game)
+        {
+            Texture2D ttRect = new Texture2D(game.GraphicsDevice, width, height);
+            Byte4[,] btRect = new Byte4[width, height];
+            uint packed = (uint)((color.A << 24) + (color.B << 16) + (color.G << 8) + color.R);
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
+                    btRect[i, j].PackedValue = packed;
+                if (j == border - 1)
+                    j = height - border - 1;
+            }
+            for (int j = 0; j < width; j++)
+            {
+                for (int i = border; i < height - border; i++)
+                    btRect[j, i].PackedValue = packed;
+                if (j == border - 1)
+                    j = width - border - 1;
+            }
+            ttRect.SetData<Byte4>(Change.Array2ToArray<Byte4>(btRect, width));
+
+            return ttRect;
+        }
+        /// <summary>
+        /// 返回一个空心矩形Sprite
+        /// </summary>
+        public static Sprite GetHollowRectangle(Vector2 position, int width, int height, int border, Color color, float depth, Game game)
+        {
+            return Sprite.OneFrameSprite(position, GetHollowRectangle(width, height, border, color, game), depth, game);
+        }
+        /// <summary>
+        /// 返回一个空心矩形Sprite
+        /// </summary>
+        public static Sprite GetHollowRectangle(Rectangle rect, Color color, int border, float depth, Game game)
+        {
+            return GetHollowRectangle(new Vector2(rect.X, rect.Y), rect.Width, rect.Height, border, color, depth, game);
+        }
+
+
 
         //////////////////////////////////////////////////////////////////////////
         /// <summary>

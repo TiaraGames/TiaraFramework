@@ -53,31 +53,27 @@ namespace TiaraFramework.Component
     {
         public static Map Load(string path, out Point size)
         {
-            try
-            {
-                XmlSerializer xs = new XmlSerializer(typeof(Map));
-                Map map = (Map)xs.Deserialize(File.Open(path, FileMode.Open));
-                map = MapOperate.Trim(map);
-                size = new Point(map.ColNum, map.RowNum);
-                return map;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                size = Point.Zero;
-                return null;
-            }
+            XmlSerializer xs = new XmlSerializer(typeof(Map));
+            FileStream fs = File.Open(path, FileMode.Open);
+            Map map = (Map)xs.Deserialize(fs);
+            fs.Flush();
+            fs.Close();
+            size = new Point(map.ColNum, map.RowNum);
+            return map;
         }
 
         public static List<Sprite> Load(string path, Game game, out Point size)
         {
             Map map = Load(path, out size);
-            if (map == null)
-                return null;
+
+            // trim map
+            map = MapOperate.Trim(map);
+
             // hold map source textures
             Texture2D[] texts = new Texture2D[map.Textures.Count];
             for (int i = 0; i < texts.Length; i++)
                 texts[i] = Texture2D.FromStream(game.GraphicsDevice, Change.BytesToStream(map.Textures[i]));
+
             // build map
             List<Sprite> liMap = new List<Sprite>();
             foreach (Grid grid in map.Mesh)

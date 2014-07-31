@@ -4,3 +4,13 @@ E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraF
 E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.exe
 E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.pdb
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\Content\SampleImges\Buttons\btnNext.xnb
+E:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\Content\SampleImges\Buttons\btnPrev.xnb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\Content\SampleImges\Buttons\btnNext.xnb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\Content\SampleImges\Buttons\btnPrev.xnb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.exe
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\bin\x86\Debug\TiaraFramework.pdb
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.csprojResolveAssemblyReference.cache
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.exe
+G:\Codes\Tiara\TiaraFramework\TiaraFramework\TiaraFramework\obj\x86\Debug\TiaraFramework.pdb
